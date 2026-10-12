@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: susu-haven
+  namespace: lab
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: susu-haven
+  template:
+    metadata:
+      labels:
+        app: susu-haven
+    spec:
+      containers:
+        - name: web
+          image: susu-haven:v1
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 50m
+              memory: 32Mi
+            limits:
+              cpu: 250m
+              memory: 128Mi

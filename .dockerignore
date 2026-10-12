@@ -1,0 +1,4 @@
+*
+!Dockerfile
+!website/
+!website/*.html

@@ -1,0 +1,10 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: susu-haven
+  namespace: flux-system
+spec:
+  interval: 1m
+  url: REPLACE_WITH_PUBLIC_REPO_URL
+  ref:
+    branch: main
