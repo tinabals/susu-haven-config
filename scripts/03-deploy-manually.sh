@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 cd "$(dirname "$0")/.."
-LAB_CONTEXT="$(kubectl config current-context)"
-case "$LAB_CONTEXT" in kind-susu-argo-lab|kind-susu-flux-lab) ;; *) echo 'Select a named Susu practice cluster first.'; exit 1;; esac
-kubectl apply -k k8s
-kubectl rollout status deployment/susu-haven -n lab --timeout=180s
-kubectl get deployment,replicaset,pods,service -n lab
+source scripts/common.sh
+require_lab
+if k -n argocd get application "$LAB_APP" >/dev/null 2>&1; then
+  printf '%s\n' 'An Argo Application already exists. Deploy through Git and Sync instead; see the existing-lab path in SETUP.md.' >&2
+  exit 1
+fi
+k apply -k k8s
+k -n "$LAB_NAMESPACE" rollout status deployment/"$LAB_APP" --timeout=180s
+k -n "$LAB_NAMESPACE" get deployment,replicaset,pods,service

@@ -4,6 +4,7 @@ metadata:
   name: susu-haven
   namespace: lab
 spec:
+  # Demo baseline: change this to 4 only for the Git experiment.
   replicas: 3
   selector:
     matchLabels:
@@ -15,7 +16,7 @@ spec:
     spec:
       containers:
         - name: web
-          image: susu-haven:v1
+          image: susu-haven:dami-v1
           imagePullPolicy: Never
           ports:
             - containerPort: 80

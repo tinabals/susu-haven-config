@@ -1,4 +1,6 @@
-*
-!Dockerfile
-!website/
-!website/*.html
+.git
+.DS_Store
+*.md
+scripts
+k8s
+gitops

@@ -1,18 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 cd "$(dirname "$0")/.."
-LAB_TOOL="${1:-}"
-LAB_REPO_URL="${2:-}"
-case "$LAB_REPO_URL" in https://*) ;; *) echo 'Pass the public HTTPS clone URL as the second argument.'; exit 1;; esac
-case "$LAB_REPO_URL" in *REPLACE*|*YOUR_USERNAME*) echo 'Replace the placeholder first.'; exit 1;; esac
-# Print the generated manifest rather than saving repository credentials.
-case "$LAB_TOOL" in
- argo)
-  test "$(kubectl config current-context)" = kind-susu-argo-lab
-  sed "s|REPLACE_WITH_PUBLIC_REPO_URL|$LAB_REPO_URL|" gitops/argocd-application.yaml | kubectl apply -f - ;;
- flux)
-  test "$(kubectl config current-context)" = kind-susu-flux-lab
-  sed "s|REPLACE_WITH_PUBLIC_REPO_URL|$LAB_REPO_URL|" gitops/flux-source.yaml | kubectl apply -f -
-  kubectl apply -f gitops/flux-kustomization.yaml ;;
- *) echo 'Usage: bash scripts/06-connect-source.sh argo|flux https://...git'; exit 1;;
-esac
+source scripts/common.sh
+require_lab
+LAB_REPO_URL="${1:-}"
+if [[ ! "$LAB_REPO_URL" =~ ^https://github\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]] || [[ "$LAB_REPO_URL" == *YOUR_USERNAME* ]]; then
+  printf '%s\n' 'Usage: bash scripts/06-connect-source.sh https://github.com/ACTUAL_OWNER/ACTUAL_REPO.git' 'Use a public practice repository with no URL credentials.' >&2
+  exit 1
+fi
+if k -n argocd get application "$LAB_APP" >/dev/null 2>&1; then
+  printf '%s\n' 'Application already exists. Keeping its repository settings. Use the existing-lab path in SETUP.md.' >&2
+  exit 1
+fi
+sed "s|REPLACE_WITH_PUBLIC_REPO_URL|$LAB_REPO_URL|" gitops/argocd-application.yaml | k apply -f -
+printf '%s\n' 'Application created in manual-sync mode. Open Argo CD, inspect the source and click Sync.'
