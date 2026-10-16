@@ -5,7 +5,7 @@ metadata:
   namespace: lab
 spec:
   # Demo baseline: change this to 4 only for the Git experiment.
-  replicas: 3
+  replicas: 7
   selector:
     matchLabels:
       app: susu-haven
