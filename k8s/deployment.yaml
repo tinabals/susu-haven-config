@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: web
-          image: susu-haven:dami-v1
+          image: susu-haven:dami-v2
           imagePullPolicy: Never
           ports:
             - containerPort: 80
